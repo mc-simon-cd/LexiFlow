@@ -36,6 +36,12 @@
 - [ ] **Kullanıcı Alışkanlığı Analizi**: Kullanıcının geçmiş çeviri tercihlerinden öğrenen kişiselleştirilmiş ML modeli.
 - [ ] **Duygu Analizi (Sentiment Analysis)**: Cümlenin tonuna (resmi, samimi, üzgün) göre en uygun karşılığın otomatik seçilmesi.
 - [ ] **Sinirsel Çeviri Yedeklemesi**: Sözlükte bulunmayan karmaşık yapılar için hafifletilmiş bir Transformer modeli (LLM) entegrasyonu.
+- [ ] **Core Orchestrator (Merkezi Orkestratör)**:
+    - [ ] **Multi-Model Routing**: İstek tipine göre (hız/kalite) sözlük, NLP veya LLM arasında dinamik yönlendirme.
+    - [ ] **Context Aggregator**: Semantik bağlar, duygu ve kullanıcı geçmişini tek bir "bağlam objesi"nde birleştirme.
+    - [ ] **Confidence Score Arbitration**: AI katmanlarından gelen çelişkili sonuçları güven skoruna göre filtreleme.
+    - [ ] **Asynchronous Fallback Logic**: Tam eşleşme yoksa milisaniyeler içinde sinirsel yedeklemeyi devreye alma.
+    - [ ] **Performance & Latency Monitoring**: AI yanıt sürelerini takip eden ve yavaşlayan modülleri bypass eden izleme katmanı.
 
 ---
 *LexiFlow v3.2.2+ - Gelecek nesil dil işleme vizyonu.*
