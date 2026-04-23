@@ -98,38 +98,26 @@ app.post('/api/analyze-nlp', (req, res) => {
  * Gelişmiş Toplu İçe Aktar (Polysemy Uyumlu)
  */
 app.post('/api/import', async (req, res) => {
-    const { data, strategy } = req.body;
+    const { data, source_lang = 'en', target_lang = 'tr' } = req.body;
     if (!data) return res.status(400).json({ error: "Veri yok" });
 
     try {
-        let success = 0, updated = 0, skipped = 0;
-        const words = Object.keys(data);
+        let success = 0;
+        const keys = Object.keys(data);
 
-        for (const word of words) {
-            const translations = Array.isArray(data[word]) ? data[word] : [{ translation: data[word] }];
-
+        for (const key of keys) {
+            const translations = Array.isArray(data[key]) ? data[key] : [{ translation: data[key] }];
             for (const entry of translations) {
-                const existing = await query.all('SELECT * FROM words WHERE source_word = ? AND target_word = ?',
-                    [word.toLowerCase(), entry.translation]);
-
-                if (existing.length > 0) {
-                    if (strategy === 'replace') {
-                        await query.run('DELETE FROM words WHERE source_word = ?', [word.toLowerCase()]);
-                        await query.run('INSERT INTO words (source_word, target_word, context_hint) VALUES (?, ?, ?)',
-                            [word.toLowerCase(), entry.translation, entry.hint]);
-                        updated++;
-                    } else if (strategy === 'update') {
-                        await query.run('UPDATE words SET context_hint = ? WHERE id = ?', [entry.hint, existing[0].id]);
-                        updated++;
-                    } else { skipped++; }
-                } else {
-                    await query.run('INSERT INTO words (source_word, target_word, context_hint) VALUES (?, ?, ?)',
-                        [word.toLowerCase(), entry.translation, entry.hint]);
+                try {
+                    await query.run(
+                        "INSERT OR IGNORE INTO words (source_word, target_word, context_hint, source_lang, target_lang) VALUES (?, ?, ?, ?, ?)",
+                        [key.toLowerCase(), entry.translation, entry.hint || 'Imported', source_lang, target_lang]
+                    );
                     success++;
-                }
+                } catch (e) { }
             }
         }
-        res.json({ success: true, report: { success, updated, skipped } });
+        res.json({ success: true, count: success });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

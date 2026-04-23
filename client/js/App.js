@@ -146,6 +146,46 @@ window.handleAutoIngest = async () => {
     }
 };
 
+window.handleFileSelect = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    UI.showToast(`${file.name} okunuyor...`, "info");
+    UI.setLoading(true, 'list');
+
+    reader.onload = async (e) => {
+        try {
+            const content = e.target.result;
+            let data = {};
+
+            if (file.name.endsWith('.json')) {
+                data = JSON.parse(content);
+            } else if (file.name.endsWith('.csv')) {
+                // Basit CSV Parser
+                const lines = content.split('\n');
+                lines.forEach(line => {
+                    const parts = line.split(/[;,]/);
+                    if (parts.length >= 2) {
+                        const key = parts[0].trim().toLowerCase();
+                        if (!data[key]) data[key] = [];
+                        data[key].push({ translation: parts[1].trim(), hint: parts[2]?.trim() || 'CSV Import' });
+                    }
+                });
+            }
+
+            const response = await API.importData(data, AppState.source_lang, AppState.target_lang);
+            UI.showToast(`Yükleme Başarılı: ${response.count} kelime eklendi.`, "success");
+            window.changeLanguage();
+        } catch (err) {
+            UI.showToast("Dosya işleme hatası: " + err.message, "error");
+        } finally {
+            UI.setLoading(false, 'list');
+            event.target.value = ""; // Reset input
+        }
+    };
+    reader.readAsText(file);
+};
 window.handleExportDoc = async (format) => {
     const lang = document.getElementById('exportLang').value;
     const sort = document.getElementById('exportSort').value;

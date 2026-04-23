@@ -130,7 +130,32 @@
                         </div>
                     </div>
 
-                    <!-- Dışa Aktarım Merkezi (Export Center) -->
+                    <!-- Yerel Dosya Yükleme (Manual Upload) -->
+                    <div class="bg-indigo-50 rounded-3xl p-6 border border-indigo-100 space-y-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="17 8 12 3 7 8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                </svg>
+                            </div>
+                            <h3 class="text-sm font-extrabold text-slate-800">Yerel Yükleme</h3>
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">Kendi JSON veya CSV dosyalarınızı
+                            yükleyerek sözlüğü genişletin.</p>
+
+                        <input type="file" id="manualFileInput" accept=".json,.csv" class="hidden"
+                            onchange="handleFileSelect(event)">
+                        <button onclick="document.getElementById('manualFileInput').click()"
+                            class="w-full bg-white border border-indigo-100 hover:border-indigo-300 text-indigo-600 font-extrabold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-sm">
+                            Dosya Seçin
+                        </button>
+                    </div>
+
+                    <!-- Export Center -->
                     <div class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 space-y-4">
                         <div class="flex items-center justify-between">
                             <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">

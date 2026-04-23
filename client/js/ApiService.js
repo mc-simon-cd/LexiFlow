@@ -78,10 +78,10 @@ class ApiService {
         });
     }
 
-    async triggerAutoIngest(source_id, limit, language_pair) {
-        return this._request('/auto-ingest', {
+    async importData(data, source_lang, target_lang) {
+        return this._request('/import', {
             method: 'POST',
-            body: JSON.stringify({ source_id, limit, language_pair })
+            body: JSON.stringify({ data, source_lang, target_lang })
         });
     }
 

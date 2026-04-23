@@ -2,6 +2,12 @@
 
 Bütün sürümler ve yapılan yeniliklerin dökümü.
 
+## [v3.2.0] - Yerel Dosya Yükleme (Manual Upload) (2026-04-23)
+### Eklendi
+- **Manual Upload Center**: Bilgisayarınızdaki JSON ve CSV dosyalarını sözlüğe aktarma özelliği eklendi.
+- **FileReader API**: Dosyaları sunucuya yüklemeden tarayıcıda işleyen güvenli ayrıştırma motoru.
+- **Dil Duyarlı Import**: Yüklenen verilerin seçili dil çiftine (EN-TR, DE-TR vb.) otomatik eşlenmesi.
+
 ## [v3.1.0] - İndirme Merkezi & Pro Raporlama (2026-04-23)
 ### Eklendi
 - **Export Center**: Kelimelerin PDF, Excel ve CSV formatlarında indirilebilmesi sağlandı.
