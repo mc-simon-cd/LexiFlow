@@ -279,19 +279,4 @@ async function clearAll() {
     }
 }
 
-async function handleExport() {
-    try {
-        const response = await API.exportData();
-        const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `lexiflow_export_${AppState.source_lang}_${AppState.target_lang}.json`;
-        a.click();
-        UI.showToast("Dışa aktarım başarıyla tamamlandı.", "success");
-    } catch (err) {
-        UI.showToast("Dışa aktarım hatası", "error");
-    }
-}
-
 document.addEventListener('DOMContentLoaded', initApp);

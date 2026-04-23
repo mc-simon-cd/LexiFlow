@@ -78,6 +78,13 @@ class ApiService {
         });
     }
 
+    async triggerAutoIngest(source_id, limit, language_pair) {
+        return this._request('/auto-ingest', {
+            method: 'POST',
+            body: JSON.stringify({ source_id, limit, language_pair })
+        });
+    }
+
     async importData(data, source_lang, target_lang) {
         return this._request('/import', {
             method: 'POST',
@@ -101,29 +108,8 @@ class ApiService {
         });
     }
 
-    /**
-     * AI Tabanlı Kelime Önerileri
-     */
     async getSuggestions(query) {
         return await this._request(`/suggest?q=${encodeURIComponent(query)}`);
-    }
-
-    /**
-     * Toplu içe aktarma
-     * Stratejiler: 'skip', 'update', 'replace'
-     */
-    async importData(data, strategy = 'skip') {
-        return await this._request('/import', {
-            method: 'POST',
-            body: JSON.stringify({ data, strategy })
-        });
-    }
-
-    /**
-     * Toplu dışa aktarma
-     */
-    async exportData() {
-        return await this._request('/export');
     }
 }
 
