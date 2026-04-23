@@ -113,5 +113,5 @@ class ApiService {
     }
 }
 
-// Global instance (opsiyonel, uygulama içinde paylaşılan tek bir servis örneği)
-const api = new ApiService();
+// Global instance
+const API = new ApiService();
