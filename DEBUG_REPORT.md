@@ -14,6 +14,16 @@ Bu rapor, LexiFlow codebase'i üzerinde yapılan derinlemesine hata taraması ve
 - **Etki**: Dosya yükleme işlemleri sırasında dil çiftleri doğru işlenmiyordu çünkü eski sürüm yenisini eziyordu.
 - **Çözüm**: Legacy (v1.0) kodlar temizlendi ve dile duyarlı v3 motoru aktif edildi.
 
+### 3. Naming Reconciliation (Kritik - Çözüldü ✅)
+- **Sorun**: `SmartSuggest.js` içinde hala küçük harf `api` kullanılıyordu.
+- **Etki**: Smart-Suggest çalışırken çöküyor ve diğer scriptleri bloklayabiliyordu.
+- **Çözüm**: Tüm referanslar global `API` nesnesine yönlendirildi.
+
+### 4. Eksik Veri Teşhis Modülü (İyileştirme - Çözüldü ✅)
+- **Sorun**: Kullanıcıların "eksik veri" hatası alması durumunda hatanın kaynağı (Frontend/Backend) belirsizdi.
+- **Etki**: Kullanıcı deneyimi düşüyor ve hata ayıklama zorlaşıyordu.
+- **Çözüm**: Hem `App.js` hem de `server.js` tarafına detaylı doğrulama ve bilgilendirici hata mesajları ("Kaynak: Boş, Hedef: OK" gibi) eklendi.
+
 ---
 
 ## 🛠️ Potansiyel Riskler & Öneriler

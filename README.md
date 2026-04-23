@@ -16,6 +16,8 @@
 - **📦 Docker & MySQL Ready**: Üretim (production) standartlarında, MySQL 8.0 tabanlı, güvenli ve konteynerize edilmiş altyapı (Port 3000).
 - **🎨 Modern UI/UX**: Shimmer skeleton ekranlar, interaktif AI etiketleri, güven skorları ve profesyonel hata yönetimi.
 - **📥 Gelişmiş Veri Yönetimi**: JSON tabanlı toplu veri dışa/içe aktarma ve çatışma çözümleme (Skip, Update, Replace) stratejileri.
+- **📂 Yerel Dosya Yükleme**: Bilgisayarınızdaki JSON ve CSV dosyalarını anında sisteme aktaran Manual Upload Center.
+- **📄 Export Center (Pro)**: Kelimeleri PDF (Profesyonel Rapor), Excel ve CSV formatlarında dışa aktarma yeteneği.
 
 ---
 

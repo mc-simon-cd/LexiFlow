@@ -31,6 +31,13 @@ Veritabanınız projenizdeki `server/dictionary.db` dosyasında saklanır ve kon
 ### Docker Build Hatası (Native Modules)
 Eğer `sqlite3` derlenirken hata alıyorsanız, Docker imajı multi-stage build kullanarak bu araçları otomatik yükler. İnternet bağlantınızı kontrol edin.
 
+### Port Çakışması (EADDRINUSE)
+Eğer sunucu başlarken "port already in use" hatası alıyorsanız, 3000 portunu şu komutla temizleyin:
+```bash
+sudo fuser -k 3000/tcp
+```
+Ardından servisi tekrar başlatın.
+
 ---
 
 ## 🗃️ Veritabanı Notları

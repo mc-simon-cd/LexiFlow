@@ -2,6 +2,16 @@
 
 Bütün sürümler ve yapılan yeniliklerin dökümü.
 
+## [v3.2.2] - Teşhis & Naming Fix (2026-04-23)
+### Giderildi
+- **Naming Reconciliation**: `SmartSuggest` içindeki hatalı API referansı düzeltildi.
+- **Diagnostic Validation**: Kelime ekleme formuna detaylı hata raporlama katmanı eklendi.
+
+## [v3.2.1] - Port Senkronizasyonu (2026-04-23)
+### Giderildi
+- **Network Sync**: Backend ve Frontend portları (3000) senkronize edilerek bağlantı sorunları çözüldü.
+- **Validation**: Sunucu tarafına "Eksik Veri" kontrolü ve bilgilendirici hata mesajları eklendi.
+
 ## [v3.2.0] - Yerel Dosya Yükleme (Manual Upload) (2026-04-23)
 ### Eklendi
 - **Manual Upload Center**: Bilgisayarınızdaki JSON ve CSV dosyalarını sözlüğe aktarma özelliği eklendi.
