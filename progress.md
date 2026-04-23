@@ -1,39 +1,35 @@
-Proje Yol Haritası (Progress)
+# LexiFlow Proje Yol Haritası (Progress)
 
-🏁 Aşama 1: Temel Mimari (Tamamlandı)
+## 🏁 Aşama 1: Temel Mimari (Tamamlandı)
+- [x] Proje konseptinin belirlenmesi.
+- [x] Temel çeviri algoritması (Tokenizer) geliştirilmesi.
 
-[x] Proje konseptinin belirlenmesi.
+## 🗄️ Aşama 2: API & Backend Entegrasyonu (Tamamlandı)
+- [x] localStorage'ın Kaldırılması ve API geçişi.
+- [x] ApiService ve Merkezi İstek Yönetimi.
+- [x] SQL Şema Tasarımı & Multi-Lang Desteği.
+- [x] Dockerize edilmiş Full-Stack mimari.
 
-[x] Temel çeviri algoritması (Tokenizer) geliştirilmesi.
+## 🧠 Aşama 3: Gelişmiş Çeviri Algoritması (Tamamlandı)
+- [x] N-Gram Desteği (Öbek çevirisi).
+- [x] Capitalization Logic (Büyük/Küçük harf uyumu).
+- [x] Polysemy (Eşsesli kelime) yönetimi.
 
-🗄️ Aşama 2: API & Backend Entegrasyonu (Tamamlandı - Hazırlık)
+## 🤖 Aşama 4: Makine Öğrenimi & Yapay Zeka (Tamamlandı)
+- [x] **Bağlamsal Analiz Modülü**: TensorFlow.js/Heuristic tabanlı anlam seçimi.
+- [x] **Smart-Suggest**: Kelime ekleme sırasında AI tabanlı anlık öneriler.
+- [x] **NLP Entegrasyonu**: Türkçe morfolojik analiz ve kök tespiti (Stemming).
 
-[x] localStorage'ın Kaldırılması.
+## 🎨 Aşama 5: Profesyonel Arayüz & UX (Tamamlandı)
+- [x] **Glassmorphism UI**: Modern ve premium arayüz tasarımı.
+- [x] **Loading ve Error UI**: Shimmer skeleton ve profesyonel hata yönetimi.
+- [x] **AI Öneri Etiketleri**: Görsel güven skorları ve AI badges.
 
-[x] ApiService Geliştirme.
+## 📥 Aşama 6: Veri Yönetimi & Ekosistem (Tamamlandı - GÜNCEL)
+- [x] **Auto-Ingest**: Harici kaynaklardan otomatik veri çekme motoru.
+- [x] **Export Center**: PDF, Excel ve CSV formatlarında profesyonel raporlama.
+- [x] **Manual Upload Center**: Yerel JSON/CSV dosyalarını sisteme aktarma.
+- [x] **Hata Teşhis Katmanı**: Backend ve Frontend için detaylı doğrulama sistemi.
 
-[x] SQL Şema Tasarımı.
-
-[x] Asenkron Senkronizasyon.
-
-🧠 Aşama 3: Gelişmiş Çeviri Algoritması (Tamamlandı - Hazırlık)
-
-[x] N-Gram Desteği.
-
-[x] Capitalization Logic.
-
-🤖 Aşama 4: Makine Öğrenimi & Yapay Zeka (Güncel Odak)
-
-[ ] Bağlamsal Analiz Modülü: Eşsesli kelimelerin cümle içindeki anlamına göre çevrilmesi. (⏳ Prompt Hazırlandı)
-
-[ ] Smart-Suggest: Kelime ekleme sırasında AI tabanlı otomatik öneriler.
-
-[ ] NLP Entegrasyonu: Metin köklerini ve eklerini ayıran zeki işlemci.
-
-🎨 Aşama 5: Profesyonel Arayüz
-
-[x] JSON Export/Import (API üzerinden). (⏳ Prompt Hazırlandı)
-
-[ ] Loading ve Error UI bileşenleri.
-
-[ ] AI Öneri Etiketleri ve UX İyileştirmeleri.
+---
+*LexiFlow v3.2.2 - Projenin tüm ana hedeflerine başarıyla ulaşıldı.*
