@@ -1,0 +1,78 @@
+/**
+ * Simon Project - LexiFlow
+ * MIT License
+ * Copyright (c) 2026 Simon Project
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.offline-overlay {
+    display: none;
+}
+
+body.is-offline .offline-overlay {
+    display: flex;
+}
+
+body.is-offline .interactive-element {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.suggestion-item:hover {
+    background: #f1f5f9;
+}
+
+/* Skeleton Animation */
+@keyframes shimmer {
+    0% { background-position: -468px 0; }
+    100% { background-position: 468px 0; }
+}
+
+.skeleton {
+    background: #f6f7f8;
+    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 104px;
+    animation: shimmer 1.5s infinite linear;
+}
+
+.loading-spinner {
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #6366f1;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Input Focus Micro-Animations */
+input:focus { transform: scale(1.01); }
+input { transition: all 0.2s ease-in-out; }
+
+/* Custom Tooltip */
+[data-tooltip] { position: relative; cursor: help; }
+[data-tooltip]:hover::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    background: #1e293b;
+    color: white;
+    font-size: 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    z-index: 100;
+    margin-bottom: 5px;
+}

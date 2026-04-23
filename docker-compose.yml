@@ -1,0 +1,25 @@
+services:
+  # Backend API Servisi (SQLite Tabanlı)
+  app:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+    container_name: sozluk-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_TYPE=sqlite
+      - DB_PATH=/usr/src/app/server/dictionary.db
+    volumes:
+      # Veritabanı dosyasını kalıcı yap
+      - ./server/dictionary.db:/usr/src/app/server/dictionary.db
+      # Frontend dosyalarını canlı izleme için mount et
+      - ./client:/usr/src/app/client
+    networks:
+      - sozluk-network
+
+networks:
+  sozluk-network:
+    driver: bridge
