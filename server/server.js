@@ -12,7 +12,7 @@ const SmartSuggestHandler = require('./SmartSuggestHandler');
 const NLPService = require('./NLPService');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.API_PORT || process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: '5mb' })); // Toplu veri için limit artırıldı
@@ -57,6 +57,11 @@ app.get('/api/words', async (req, res) => {
 app.post('/api/words', async (req, res) => {
     try {
         const { source_word, target_word, context_hint, source_lang = 'en', target_lang = 'tr' } = req.body;
+
+        if (!source_word || !target_word) {
+            return res.status(400).json({ error: "Eksik veri hatası: Kelime ve çeviri alanları doldurulmalıdır." });
+        }
+
         await query.run(
             "INSERT INTO words (source_word, target_word, context_hint, source_lang, target_lang) VALUES (?, ?, ?, ?, ?)",
             [source_word.toLowerCase(), target_word, context_hint, source_lang, target_lang]
