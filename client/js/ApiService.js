@@ -78,6 +78,13 @@ class ApiService {
         });
     }
 
+    async triggerAutoIngest(source_id, limit, language_pair) {
+        return this._request('/auto-ingest', {
+            method: 'POST',
+            body: JSON.stringify({ source_id, limit, language_pair })
+        });
+    }
+
     /**
      * Kelime sil
      */

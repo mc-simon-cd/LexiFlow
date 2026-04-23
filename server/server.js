@@ -159,6 +159,18 @@ app.post('/api/import/external', async (req, res) => {
 // Alias for import-web as requested
 app.post('/api/import-web', (req, res) => app._router.handle({ method: 'POST', url: '/api/import/external', body: req.body }, res));
 
+// OTOMATİK VERİ ÇEKİMİ (LexiFlow 3.0)
+const AutoIngestionService = require('./AutoIngestionService');
+app.post('/api/auto-ingest', async (req, res) => {
+    try {
+        const { source_id, limit, language_pair } = req.body;
+        const result = await AutoIngestionService.ingest(source_id, limit, language_pair);
+        res.json({ success: true, report: result });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Veritabanını başlat ve server'ı ayağa kaldır
 initDB().then(() => {
     app.listen(PORT, '0.0.0.0', () => {

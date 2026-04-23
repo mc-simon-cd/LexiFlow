@@ -128,6 +128,24 @@ window.handleBulkParse = async () => {
     window.changeLanguage();
 };
 
+window.handleAutoIngest = async () => {
+    const sourceId = document.getElementById('autoSourceSelect').value;
+    const limit = parseInt(document.getElementById('autoSourceLimit').value) || 1000;
+    const pair = `${AppState.source_lang}-${AppState.target_lang}`;
+
+    UI.showToast("Otomatik aktarım başladı...", "info");
+    UI.setLoading(true, 'list');
+    try {
+        const result = await API.triggerAutoIngest(sourceId, limit, pair);
+        UI.showToast(`Aktarım Tamamlandı: ${result.report.success} yeni kelime eklendi.`, "success");
+        window.changeLanguage(); // Yenile
+    } catch (err) {
+        UI.showToast("Otomatik aktarım başarısız: " + err.message, "error");
+    } finally {
+        UI.setLoading(false, 'list');
+    }
+};
+
 /**
  * CRUD OPERATIONS
  */
