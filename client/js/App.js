@@ -225,7 +225,10 @@ async function addWord() {
     const target = document.getElementById('targetWord').value.trim();
     const hint = document.getElementById('contextHint').value.trim();
 
-    if (!src || !target) return;
+    if (!src || !target) {
+        UI.showToast("Lütfen kaynak ve hedef kelime alanlarını doldurun.", "warning");
+        return;
+    }
 
     UI.setLoading(true, 'button');
     try {

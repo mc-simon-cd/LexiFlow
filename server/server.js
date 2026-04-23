@@ -59,7 +59,10 @@ app.post('/api/words', async (req, res) => {
         const { source_word, target_word, context_hint, source_lang = 'en', target_lang = 'tr' } = req.body;
 
         if (!source_word || !target_word) {
-            return res.status(400).json({ error: "Eksik veri hatası: Kelime ve çeviri alanları doldurulmalıdır." });
+            console.error("Eksik Veri Alındı:", req.body);
+            return res.status(400).json({
+                error: `Eksik veri hatası: Sunucuya eksik bilgi ulaştı. (Kaynak: ${source_word ? 'OK' : 'Boş'}, Hedef: ${target_word ? 'OK' : 'Boş'})`
+            });
         }
 
         await query.run(

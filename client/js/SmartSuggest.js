@@ -13,7 +13,7 @@ const SmartSuggest = {
         clearTimeout(this.timeout);
         this.timeout = setTimeout(async () => {
             try {
-                const response = await api.getSuggestions(val);
+                const response = await API.getSuggestions(val);
                 if (response.suggestions && response.suggestions.length > 0) {
                     container.innerHTML = response.suggestions.map(s => `
                         <div class="suggestion-item p-2 flex justify-between items-center border-b border-slate-50 last:border-0 group/sug">
