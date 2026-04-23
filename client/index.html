@@ -130,6 +130,77 @@
                         </div>
                     </div>
 
+                    <!-- Dışa Aktarım Merkezi (Export Center) -->
+                    <div class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round" class="text-indigo-600">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                                Export Center
+                            </h3>
+                            <span
+                                class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold uppercase">Pro</span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="col-span-2">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Dil
+                                        Filtresi</label>
+                                    <select id="exportLang"
+                                        class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium">
+                                        <option value="all">Tüm Diller</option>
+                                        <option value="en-tr">English - Turkish</option>
+                                        <option value="de-tr">German - Turkish</option>
+                                    </select>
+                                </div>
+                                <div class="flex-1">
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Sıralama</label>
+                                    <select id="exportSort"
+                                        class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-xs outline-none transition-all font-medium">
+                                        <option value="date">Tarih</option>
+                                        <option value="a-z">A-Z</option>
+                                        <option value="z-a">Z-A</option>
+                                    </select>
+                                </div>
+                                <div class="flex-1">
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Kapsam</label>
+                                    <select id="exportScope"
+                                        class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-xs outline-none transition-all font-medium">
+                                        <option value="all">Tümü</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-2 pt-2">
+                                <button onclick="handleExportDoc('pdf')"
+                                    class="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                        stroke-linejoin="round" class="group-hover:scale-110 transition-transform">
+                                        <path
+                                            d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                        <polyline points="14 2 14 8 20 8" />
+                                    </svg>
+                                    Profesyonel PDF
+                                </button>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="handleExportDoc('excel')"
+                                        class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all">Excel</button>
+                                    <button onclick="handleExportDoc('csv')"
+                                        class="bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all">CSV</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Veri Madenciliği & Otomatik Kaynaklar -->
                     <div
                         class="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-3xl p-6 text-white shadow-xl space-y-4">

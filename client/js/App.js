@@ -146,6 +146,37 @@ window.handleAutoIngest = async () => {
     }
 };
 
+window.handleExportDoc = async (format) => {
+    const lang = document.getElementById('exportLang').value;
+    const sort = document.getElementById('exportSort').value;
+    const scope = document.getElementById('exportScope').value;
+
+    UI.showToast(`Belge hazırlanıyor (${format.toUpperCase()})...`, "info");
+    UI.setLoading(true, 'full');
+
+    try {
+        const params = new URLSearchParams({ lang_pair: lang, sort, scope });
+        const response = await fetch(`${API.baseUrl}/export/${format}?${params}`);
+        if (!response.ok) throw new Error("İndirme hatası");
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `lexiflow_export_${new Date().getTime()}.${format === 'excel' ? 'xlsx' : format}`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+        UI.showToast("Belgeniz başarıyla hazırlandı", "success");
+    } catch (err) {
+        UI.showToast("Belge oluşturulamadı: " + err.message, "error");
+    } finally {
+        UI.setLoading(false, 'full');
+    }
+};
+
 /**
  * CRUD OPERATIONS
  */

@@ -171,6 +171,97 @@ app.post('/api/auto-ingest', async (req, res) => {
     }
 });
 
+// BELGE İNDİRME (Export Center)
+const PDFDocument = require('pdfkit');
+const ExcelJS = require('exceljs');
+
+app.get('/api/export/:format', async (req, res) => {
+    try {
+        const { format } = req.params;
+        const { lang_pair, sort, scope } = req.query;
+
+        // Veri Çekme ve Filtreleme
+        let sql = "SELECT source_word, target_word, context_hint, source_lang, target_lang FROM words";
+        const params = [];
+
+        if (lang_pair && lang_pair !== 'all') {
+            const [src, target] = lang_pair.split('-');
+            sql += " WHERE source_lang = ? AND target_lang = ?";
+            params.push(src, target);
+        }
+
+        if (sort === 'a-z') sql += " ORDER BY source_word ASC";
+        else if (sort === 'z-a') sql += " ORDER BY source_word DESC";
+        else sql += " ORDER BY created_at DESC";
+
+        const words = await query.all(sql, params);
+
+        if (format === 'csv') {
+            let csv = "Source;Target;Hint;Langs\n";
+            words.forEach(w => {
+                csv += `"${w.source_word}";"${w.target_word}";"${w.context_hint || ''}";"${w.source_lang}-${w.target_lang}"\n`;
+            });
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader('Content-Disposition', 'attachment; filename=lexiflow_export.csv');
+            return res.send(csv);
+        }
+
+        if (format === 'excel') {
+            const workbook = new ExcelJS.Workbook();
+            const sheet = workbook.addWorksheet('LexiFlow Words');
+            sheet.columns = [
+                { header: 'Source Word', key: 'src', width: 20 },
+                { header: 'Translation', key: 'target', width: 25 },
+                { header: 'Hint', key: 'hint', width: 30 },
+                { header: 'Lang Pair', key: 'lang', width: 15 }
+            ];
+            words.forEach(w => sheet.addRow({ src: w.source_word, target: w.target_word, hint: w.context_hint, lang: `${w.source_lang}-${w.target_lang}` }));
+
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', 'attachment; filename=lexiflow_export.xlsx');
+            return await workbook.xlsx.write(res);
+        }
+
+        if (format === 'pdf') {
+            const doc = new PDFDocument({ margin: 50 });
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=lexiflow_export.pdf');
+            doc.pipe(res);
+
+            // Başlık
+            doc.fontSize(20).text('LexiFlow Sözlük Raporu', { align: 'center' });
+            doc.moveDown();
+            doc.fontSize(10).text(`Tarih: ${new Date().toLocaleDateString()} | Toplam Kelime: ${words.length}`, { align: 'right' });
+            doc.moveDown();
+
+            // Tablo (Basit Çizim)
+            doc.fontSize(12).font('Helvetica-Bold');
+            doc.text('Kelime', 50, doc.y, { width: 150 });
+            doc.text('Çeviri', 200, doc.y, { width: 150 });
+            doc.text('Dili', 350, doc.y);
+            doc.moveDown(0.5);
+            doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+            doc.moveDown(0.5);
+
+            doc.font('Helvetica').fontSize(10);
+            words.forEach(w => {
+                const currentY = doc.y;
+                if (currentY > 700) doc.addPage();
+                doc.text(w.source_word, 50, doc.y, { width: 150 });
+                doc.text(w.target_word, 200, currentY, { width: 150 });
+                doc.text(`${w.source_lang}-${w.target_lang}`, 350, currentY);
+                doc.moveDown(0.8);
+            });
+
+            return doc.end();
+        }
+
+        res.status(400).send("Geçersiz format");
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Veritabanını başlat ve server'ı ayağa kaldır
 initDB().then(() => {
     app.listen(PORT, '0.0.0.0', () => {
