@@ -57,17 +57,24 @@ class ApiService {
     /**
      * Tüm sözlüğü getir
      */
-    async fetchWords() {
-        return await this._request('/words');
+    async fetchWords(src = 'en', target = 'tr') {
+        return this._request(`/words?src=${src}&target=${target}`);
     }
 
     /**
      * Yeni kelime ekle veya güncelle
      */
-    async saveWord(word, translation, hint = null) {
-        return await this._request('/words', {
+    async saveWord(source_word, target_word, context_hint = "", source_lang = 'en', target_lang = 'tr') {
+        return this._request('/words', {
             method: 'POST',
-            body: JSON.stringify({ word, translation, hint })
+            body: JSON.stringify({ source_word, target_word, context_hint, source_lang, target_lang })
+        });
+    }
+
+    async importExternal(url, type, source_lang, target_lang) {
+        return this._request('/import/external', {
+            method: 'POST',
+            body: JSON.stringify({ url, type, source_lang, target_lang })
         });
     }
 

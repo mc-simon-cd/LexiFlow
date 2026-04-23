@@ -49,22 +49,34 @@ async function initDB() {
         const dbPath = path.resolve(__dirname, 'sozluk.sqlite');
         db = new sqlite3.Database(dbPath);
 
-        db.serialize(() => {
-            db.run(`
-                CREATE TABLE IF NOT EXISTS words (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    source_word TEXT NOT NULL,
-                    target_word TEXT NOT NULL,
-                    context_hint TEXT,
-                    user_id INTEGER NOT NULL DEFAULT 1,
-                    language_pair TEXT NOT NULL DEFAULT 'tr-en',
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                )
-            `);
+        // Kelimeler tablosunu dilleri içerecek şekilde oluştur
+        await query.run(`
+            CREATE TABLE IF NOT EXISTS words (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source_word TEXT NOT NULL,
+                target_word TEXT NOT NULL,
+                context_hint TEXT,
+                source_lang TEXT DEFAULT 'en',
+                target_lang TEXT DEFAULT 'tr',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
 
-            // Verileri taşı (Basit kontrol)
-            console.log('SQLite veritabanı hazır.');
-        });
+        // Sütunların varlığını kontrol et (Migration / Geriye dönük uyumluluk)
+        const columns = await query.all("PRAGMA table_info(words)");
+        const columnNames = columns.map(c => c.name);
+
+        if (!columnNames.includes('source_lang')) {
+            await query.run("ALTER TABLE words ADD COLUMN source_lang TEXT DEFAULT 'en'");
+        }
+        if (!columnNames.includes('target_lang')) {
+            await query.run("ALTER TABLE words ADD COLUMN target_lang TEXT DEFAULT 'tr'");
+        }
+
+        // Performans için indeksler
+        await query.run("CREATE INDEX IF NOT EXISTS idx_word_lang ON words(source_word, source_lang, target_lang)");
+
+        console.log("SQLite veritabanı hazır (Multi-lang destekli).");
     }
 }
 

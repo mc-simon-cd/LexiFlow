@@ -5,12 +5,11 @@
  */
 
 const UI = {
+    // ... existing setLoading ...
     setLoading(isLoading, mode = 'full') {
         if (mode === 'full') {
             const loader = document.getElementById('loadingState');
-            if (loader) {
-                if (isLoading) loader.classList.remove('hidden'); else loader.classList.add('hidden');
-            }
+            if (loader) { if (isLoading) loader.classList.remove('hidden'); else loader.classList.add('hidden'); }
         } else if (mode === 'list') {
             const skeleton = document.getElementById('listSkeleton');
             const content = document.getElementById('listContent');
@@ -27,16 +26,24 @@ const UI = {
             const btn = document.getElementById('addBtn');
             const btnText = document.getElementById('addBtnText');
             const spinner = document.getElementById('addBtnSpinner');
-            if (isLoading) {
-                btn.disabled = true;
-                btnText.classList.add('opacity-0');
-                spinner.classList.remove('hidden');
-            } else {
-                btn.disabled = false;
-                btnText.classList.remove('opacity-0');
-                spinner.classList.add('hidden');
+            if (btn && btnText && spinner) {
+                if (isLoading) { btn.disabled = true; btnText.classList.add('opacity-0'); spinner.classList.remove('hidden'); }
+                else { btn.disabled = false; btnText.classList.remove('opacity-0'); spinner.classList.add('hidden'); }
             }
         }
+    },
+
+    switchTab(tabId) {
+        document.getElementById('view-translate').classList.toggle('hidden', tabId !== 'translate');
+        document.getElementById('view-notebook').classList.toggle('hidden', tabId !== 'notebook');
+
+        document.getElementById('tab-translate').className = tabId === 'translate'
+            ? "flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all bg-white text-indigo-600 shadow-sm"
+            : "flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all text-slate-500 hover:bg-white/50";
+
+        document.getElementById('tab-notebook').className = tabId === 'notebook'
+            ? "flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all bg-white text-indigo-600 shadow-sm"
+            : "flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all text-slate-500 hover:bg-white/50";
     },
 
     renderList() {
@@ -46,39 +53,35 @@ const UI = {
         document.getElementById('wordCount').innerText = keys.length;
 
         list.innerHTML = "";
-
-        if (keys.length === 0 && AppState.isLoaded) {
-            empty.classList.remove('hidden');
-            return;
-        } else {
-            empty.classList.add('hidden');
-        }
+        if (keys.length === 0 && AppState.isLoaded) { empty.classList.remove('hidden'); return; }
+        else { empty.classList.add('hidden'); }
 
         keys.forEach(key => {
             const meanings = AppState.dictionary[key];
             const div = document.createElement('div');
-            div.className = "p-3 bg-white border border-slate-100 rounded-xl hover:border-indigo-200 transition-all group mb-2 shadow-sm";
+            div.className = "p-4 bg-white border border-slate-100 rounded-2xl hover:border-indigo-100 transition-all group shadow-sm flex justify-between items-start";
             div.innerHTML = `
-                <div class="flex justify-between items-start">
-                    <div class="flex flex-col">
-                        <span class="text-sm font-bold text-slate-800">${key}</span>
-                        <div class="space-y-1 mt-1.5">
-                            ${meanings.map(m => `
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[11px] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full font-medium">${m.translation}</span>
-                                    ${m.hint ? `<span class="text-[10px] text-slate-400 italic">(${m.hint})</span>` : ''}
-                                </div>
-                            `).join('')}
-                        </div>
+                <div class="flex flex-col">
+                    <span class="text-sm font-extrabold text-slate-800">${key}</span>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        ${meanings.map(m => `
+                            <span class="text-[10px] bg-slate-50 text-indigo-600 px-2.5 py-1 rounded-lg border border-indigo-50 font-bold">
+                                ${m.target_word} ${m.hint ? `<span class="text-slate-400 font-normal ml-1">(${m.hint})</span>` : ''}
+                            </span>
+                        `).join('')}
                     </div>
-                    <button onclick="deleteWord('${key}')" class="text-slate-300 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                    </button>
                 </div>
+                <button onclick="deleteWord('${key}')" class="text-slate-300 hover:text-rose-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                </button>
             `;
             list.appendChild(div);
         });
     },
+
+    showImportModal() { document.getElementById('importModal').classList.replace('hidden', 'flex'); },
+    hideImportModal() { document.getElementById('importModal').classList.replace('flex', 'hidden'); },
+    // ... existing setFailSafe, showToast, renderAIBadge ...
 
     setFailSafe(error) {
         AppState.isOnline = false;

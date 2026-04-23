@@ -91,7 +91,7 @@ const TranslatorEngine = {
                     // 2. NLP Stemming Kontrolü (Sadece tek kelimeler için)
                     if (n === 1) {
                         try {
-                            const analysis = await api.analyzeNLP(phraseKey);
+                            const analysis = await API.analyzeNLP(phraseKey);
                             if (analysis && analysis.root !== phraseKey) {
                                 const rootCandidates = AppState.dictionary[analysis.root];
                                 if (rootCandidates) {

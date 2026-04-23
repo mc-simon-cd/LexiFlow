@@ -4,118 +4,147 @@
  * Copyright (c) 2026 Simon Project
  */
 
-const AppState = { dictionary: {}, isLoaded: false, isOnline: true };
-
-function showToast(m, t) { UI.showToast(m, t); }
+const AppState = {
+    dictionary: {},
+    isOnline: true,
+    isLoaded: false,
+    source_lang: 'en',
+    target_lang: 'tr'
+};
 
 /**
- * CORE ACTIONS
+ * INITIALIZATION
  */
 async function initApp() {
-    UI.setLoading(true, 'list');
+    UI.setLoading(true, 'full');
     try {
-        AppState.dictionary = await api.fetchWords();
-        AppState.isLoaded = true;
+        AppState.dictionary = await API.fetchWords(AppState.source_lang, AppState.target_lang);
         AppState.isOnline = true;
+        AppState.isLoaded = true;
         UI.renderList();
         TranslatorEngine.translate();
-        handleMigration();
-    } catch (err) { console.error(err); UI.setFailSafe(err.message); } finally { UI.setLoading(false, 'list'); }
-}
-
-async function handleMigration() {
-    const oldData = localStorage.getItem('my_dictionary_app');
-    if (oldData) {
-        try {
-            const data = JSON.parse(oldData);
-            if (Object.keys(data).length > 0) {
-                if (confirm("Local veriler bulundu. Bulut hesabınıza aktarılsın mı?")) {
-                    await api.importData(data, 'update');
-                    localStorage.removeItem('my_dictionary_app');
-                    showToast("Göç başarılı.");
-                    await initApp();
-                }
-            }
-        } catch (e) { }
+        UI.showToast(`${AppState.source_lang.toUpperCase()} - ${AppState.target_lang.toUpperCase()} Sözlüğü Hazır`, 'success');
+    } catch (err) {
+        console.error(err);
+        UI.setFailSafe(err.message);
+    } finally {
+        UI.setLoading(false, 'full');
     }
 }
 
+/**
+ * GLOBAL HANDLERS (Scope: window)
+ */
+window.switchTab = (tabId) => UI.switchTab(tabId);
+
+window.changeLanguage = async () => {
+    AppState.source_lang = document.getElementById('langSource').value;
+    AppState.target_lang = document.getElementById('langTarget').value;
+    AppState.isLoaded = false;
+    UI.setLoading(true, 'list');
+    try {
+        AppState.dictionary = await API.fetchWords(AppState.source_lang, AppState.target_lang);
+        AppState.isLoaded = true;
+        UI.renderList();
+        TranslatorEngine.translate();
+    } catch (err) {
+        UI.showToast("Dil yükleme hatası", "error");
+    } finally {
+        UI.setLoading(false, 'list');
+    }
+};
+
+window.startScraper = async () => {
+    const url = document.getElementById('importUrl').value;
+    const type = document.getElementById('importType').value;
+    if (!url) return UI.showToast("Lütfen bir URL girin", "error");
+
+    UI.showToast("Veri madenciliği başlatıldı...", "info");
+    try {
+        const result = await API.importExternal(url, type, AppState.source_lang, AppState.target_lang);
+        UI.showToast(`${result.count} kelime başarıyla ayıklandı ve eklendi!`, "success");
+        UI.hideImportModal();
+        window.changeLanguage(); // Yenile
+    } catch (err) {
+        UI.showToast("Madencilik başarısız: " + err.message, "error");
+    }
+};
+
+/**
+ * CRUD OPERATIONS
+ */
 async function addWord() {
-    const src = document.getElementById('srcWord').value.trim().toLowerCase();
+    const src = document.getElementById('srcWord').value.trim();
     const target = document.getElementById('targetWord').value.trim();
     const hint = document.getElementById('contextHint').value.trim();
-    if (src && target) {
-        try {
-            UI.setLoading(true, 'button');
-            await api.saveWord(src, target, hint);
-            document.getElementById('srcWord').value = "";
-            document.getElementById('targetWord').value = "";
-            document.getElementById('contextHint').value = "";
-            await initApp();
-            showToast("Yeni kelime deftere kaydedildi.");
-        } catch (err) { } finally { UI.setLoading(false, 'button'); }
+
+    if (!src || !target) return;
+
+    UI.setLoading(true, 'button');
+    try {
+        await API.saveWord(src, target, hint, AppState.source_lang, AppState.target_lang);
+        document.getElementById('srcWord').value = "";
+        document.getElementById('targetWord').value = "";
+        document.getElementById('contextHint').value = "";
+
+        // State Update (Local merge to avoid reload)
+        const key = src.toLowerCase();
+        if (!AppState.dictionary[key]) AppState.dictionary[key] = [];
+        AppState.dictionary[key].push({ target_word: target, hint, source_lang: AppState.source_lang, target_lang: AppState.target_lang });
+
+        UI.renderList();
+        UI.showToast("Kelime deftere eklendi", 'success');
+    } catch (err) {
+        UI.showToast("Hata oluştu: " + err.message, 'error');
+    } finally {
+        UI.setLoading(false, 'button');
     }
 }
 
 async function deleteWord(key) {
+    if (!confirm(`"${key}" kelimesini silmek istediğinize emin misiniz?`)) return;
     try {
         UI.setLoading(true, 'list');
-        await api.deleteWord(key);
-        await initApp();
-        showToast(`"${key}" kelimesi silindi.`);
-    } catch (err) { } finally { UI.setLoading(false, 'list'); }
-}
-
-async function clearAll() {
-    if (confirm("Tüm sözlüğü temizlemek istediğinize emin misiniz?")) {
-        try {
-            UI.setLoading(true, 'list');
-            await api.importData({}, 'replace');
-            await initApp();
-            showToast("Tüm sözlük temizlendi.");
-        } catch (err) { } finally { UI.setLoading(false, 'list'); }
+        await API.deleteWord(key); // Not: API.deleteWord parametre uyumuna dikkat
+        delete AppState.dictionary[key.toLowerCase()];
+        UI.renderList();
+        UI.showToast(`"${key}" silindi.`, "success");
+    } catch (err) {
+        UI.showToast("Silme hatası", "error");
+    } finally {
+        UI.setLoading(false, 'list');
     }
 }
 
-function triggerImport() { document.getElementById('fileInput').click(); }
-
-async function handleFileSelect(event) {
-    const file = event.target.files[0];
-    if (!file || file.size > 2 * 1024 * 1024) return;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
+async function clearAll() {
+    if (confirm("Seçili dil çiftindeki TÜM kelimeleri temizlemek üzeresiniz! Devam edilsin mi?")) {
         try {
-            window.pendingImportData = JSON.parse(e.target.result);
-            document.getElementById('conflictModal').classList.replace('hidden', 'flex');
-        } catch (err) { showToast("Geçersiz JSON", "error"); }
-    };
-    reader.readAsText(file);
+            UI.setLoading(true, 'list');
+            await API.importData({}, 'replace'); // Basitleştirildi
+            AppState.dictionary = {};
+            UI.renderList();
+            UI.showToast("Sözlük temizlendi.", "success");
+        } catch (err) {
+            UI.showToast("Temizleme hatası", "error");
+        } finally {
+            UI.setLoading(false, 'list');
+        }
+    }
 }
-
-async function resolveConflict(strategy) {
-    try {
-        UI.setLoading(true, 'list');
-        const response = await api.importData(window.pendingImportData, strategy);
-        await initApp();
-        hideConflictModal();
-        const r = response.report;
-        showToast(`Aktarım Tamamlandı: ${r.success} yeni, ${r.updated} güncellenen.`);
-    } catch (err) { hideConflictModal(); } finally { UI.setLoading(false, 'list'); }
-}
-
-function hideConflictModal() { document.getElementById('conflictModal').classList.replace('flex', 'hidden'); }
 
 async function handleExport() {
     try {
-        const response = await api.exportData();
+        const response = await API.exportData();
         const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `sozluk_yedek_${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `lexiflow_export_${AppState.source_lang}_${AppState.target_lang}.json`;
         a.click();
-        showToast("Sözlük başarıyla ihraç edildi.");
-    } catch (err) { }
+        UI.showToast("Dışa aktarım başarıyla tamamlandı.", "success");
+    } catch (err) {
+        UI.showToast("Dışa aktarım hatası", "error");
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initApp);

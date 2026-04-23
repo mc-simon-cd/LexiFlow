@@ -27,28 +27,40 @@ app.get('/', (req, res) => {
 
 // --- API ENDPOINTS ---
 
-// Tüm kelimeleri getir (Polysemy destekli)
+// Kelimeleri getir (Dil çiftine göre filtrele)
 app.get('/api/words', async (req, res) => {
     try {
-        const rows = await query.all('SELECT source_word, target_word, context_hint FROM words ORDER BY source_word ASC');
+        const { src, target } = req.query;
+        let sql = "SELECT * FROM words WHERE 1=1";
+        const params = [];
+        if (src) { sql += " AND source_lang = ?"; params.push(src); }
+        if (target) { sql += " AND target_lang = ?"; params.push(target); }
+
+        const rows = await query.all(sql, params);
+        // N-Gram motoru için grup yapısı korundu
         const dictionary = {};
         rows.forEach(row => {
-            const word = row.source_word;
-            if (!dictionary[word]) dictionary[word] = [];
-            dictionary[word].push({ translation: row.target_word, hint: row.context_hint });
+            const key = row.source_word.toLowerCase();
+            if (!dictionary[key]) dictionary[key] = [];
+            dictionary[key].push({
+                target_word: row.target_word,
+                hint: row.context_hint,
+                src_lang: row.source_lang,
+                target_lang: row.target_lang
+            });
         });
         res.json(dictionary);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Yeni kelime ekle veya güncelle
+// Kelime ekle/güncelle
 app.post('/api/words', async (req, res) => {
-    const { word, translation, hint } = req.body;
-    if (!word || !translation) return res.status(400).json({ error: "Eksik veri" });
-
     try {
-        await query.run('INSERT INTO words (source_word, target_word, context_hint) VALUES (?, ?, ?)',
-            [word.toLowerCase(), translation, hint]);
+        const { source_word, target_word, context_hint, source_lang = 'en', target_lang = 'tr' } = req.body;
+        await query.run(
+            "INSERT INTO words (source_word, target_word, context_hint, source_lang, target_lang) VALUES (?, ?, ?, ?, ?)",
+            [source_word.toLowerCase(), target_word, context_hint, source_lang, target_lang]
+        );
         res.json({ success: true });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -118,6 +130,29 @@ app.post('/api/import', async (req, res) => {
             }
         }
         res.json({ success: true, report: { success, updated, skipped } });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// HARİCİ VERİ MADENCİLİĞİ (Evolution v2.0)
+const ImportService = require('./ImportService');
+app.post('/api/import/external', async (req, res) => {
+    try {
+        const { url, type, source_lang, target_lang } = req.body;
+        const rawPairs = await ImportService.fetchFromUrl(url, type);
+        const processed = ImportService.preprocess(rawPairs, source_lang, target_lang);
+
+        let successCount = 0;
+        for (const item of processed) {
+            try {
+                await query.run(
+                    "INSERT INTO words (source_word, target_word, context_hint, source_lang, target_lang) VALUES (?, ?, ?, ?, ?)",
+                    [item.source.toLowerCase(), item.target, item.hint, item.source_lang, item.target_lang]
+                );
+                successCount++;
+            } catch (e) { /* Çakışma veya hata durumunda atla */ }
+        }
+
+        res.json({ success: true, count: successCount });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
