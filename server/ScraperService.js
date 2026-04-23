@@ -6,7 +6,7 @@
 
 const axios = require('axios');
 
-const ImportService = {
+const ScraperService = {
     /**
      * Harici URL'den veri çek ve parse et
      */
@@ -88,4 +88,4 @@ const ImportService = {
     }
 };
 
-module.exports = ImportService;
+module.exports = ScraperService;

@@ -141,11 +141,28 @@
                             </svg>
                             Veri Madenciliği
                         </h3>
-                        <p class="text-xs text-indigo-100 mb-4 leading-relaxed">Harici bir URL'den toplu kelime
-                            madenciliği yapın ve sözlüğünüzü zenginleştirin.</p>
+                        <p class="text-xs text-indigo-100 mb-4 leading-relaxed">URL girerek toplu kelime çekin.</p>
                         <button onclick="UI.showImportModal()"
-                            class="w-full bg-white/20 hover:bg-white/30 backdrop-blur-md py-2.5 rounded-xl text-sm font-bold transition-all">Veri
-                            Madencisini Başlat</button>
+                            class="w-full bg-white/20 hover:bg-white/30 backdrop-blur-md py-2.5 rounded-xl text-sm font-bold transition-all">Dış
+                            Kaynaktan Veri Çek</button>
+                    </div>
+
+                    <!-- Toplu Metin Ayrıştırma -->
+                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
+                        <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="text-emerald-500">
+                                <path
+                                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L21 3l-1.9 4.1Z" />
+                            </svg>
+                            Toplu Metin Ayrıştır
+                        </h3>
+                        <textarea id="bulkPasteArea" placeholder="word1 - trans1&#10;word2 : trans2&#10;word3 , trans3"
+                            class="w-full h-32 p-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs custom-scrollbar mb-3"></textarea>
+                        <button onclick="handleBulkParse()"
+                            class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs transition-all">Metni
+                            Ayrıştır ve Ekle</button>
                     </div>
                 </div>
 
@@ -224,9 +241,19 @@
                         <select id="importType"
                             class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none">
                             <option value="json">JSON</option>
-                            <option value="html">HTML (<li><b>..</b>..</li>)</option>
+                            <option value="html">HTML (List Items)</option>
                             <option value="csv">CSV (word,target)</option>
                         </select>
+                    </div>
+                </div>
+                <!-- Progress Bar -->
+                <div id="importProgressContainer" class="hidden">
+                    <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-2 uppercase italic">
+                        <span>Madencilik Durumu</span>
+                        <span id="importProgressText">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        <div id="importProgressBar" class="bg-indigo-600 h-full w-0 transition-all duration-500"></div>
                     </div>
                 </div>
             </div>

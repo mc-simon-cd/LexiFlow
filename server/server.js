@@ -133,28 +133,31 @@ app.post('/api/import', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// HARİCİ VERİ MADENCİLİĞİ (Evolution v2.0)
-const ImportService = require('./ImportService');
+// HARİCİ VERİ MADENCİLİĞİ (Evolution v2.0 - Scraper 2.0)
+const ScraperService = require('./ScraperService');
 app.post('/api/import/external', async (req, res) => {
     try {
         const { url, type, source_lang, target_lang } = req.body;
-        const rawPairs = await ImportService.fetchFromUrl(url, type);
-        const processed = ImportService.preprocess(rawPairs, source_lang, target_lang);
+        const rawPairs = await ScraperService.fetchFromUrl(url, type);
+        const processed = ScraperService.preprocess(rawPairs, source_lang, target_lang);
 
         let successCount = 0;
         for (const item of processed) {
             try {
                 await query.run(
-                    "INSERT INTO words (source_word, target_word, context_hint, source_lang, target_lang) VALUES (?, ?, ?, ?, ?)",
+                    "INSERT OR IGNORE INTO words (source_word, target_word, context_hint, source_lang, target_lang) VALUES (?, ?, ?, ?, ?)",
                     [item.source.toLowerCase(), item.target, item.hint, item.source_lang, item.target_lang]
                 );
                 successCount++;
-            } catch (e) { /* Çakışma veya hata durumunda atla */ }
+            } catch (e) { /* Çakışma durumunda atlanır */ }
         }
 
         res.json({ success: true, count: successCount });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
+// Alias for import-web as requested
+app.post('/api/import-web', (req, res) => app._router.handle({ method: 'POST', url: '/api/import/external', body: req.body }, res));
 
 // Veritabanını başlat ve server'ı ayağa kaldır
 initDB().then(() => {

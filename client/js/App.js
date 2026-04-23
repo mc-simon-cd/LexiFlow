@@ -36,6 +36,7 @@ async function initApp() {
  * GLOBAL HANDLERS (Scope: window)
  */
 window.switchTab = (tabId) => UI.switchTab(tabId);
+window.switchView = (page) => UI.switchTab(page === 'notebook' ? 'notebook' : 'translate');
 
 window.changeLanguage = async () => {
     AppState.source_lang = document.getElementById('langSource').value;
@@ -59,15 +60,72 @@ window.startScraper = async () => {
     const type = document.getElementById('importType').value;
     if (!url) return UI.showToast("Lütfen bir URL girin", "error");
 
+    const progressContainer = document.getElementById('importProgressContainer');
+    const progressBar = document.getElementById('importProgressBar');
+    const progressText = document.getElementById('importProgressText');
+
+    progressContainer.classList.remove('hidden');
     UI.showToast("Veri madenciliği başlatıldı...", "info");
+
+    // Simüle edilmiş progress (API stream desteklemediği için görsel amaçlı)
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 5;
+        if (progress > 90) clearInterval(interval);
+        progressBar.style.width = `${progress}%`;
+        progressText.innerText = `${progress}%`;
+    }, 200);
+
     try {
         const result = await API.importExternal(url, type, AppState.source_lang, AppState.target_lang);
+        clearInterval(interval);
+        progressBar.style.width = `100%`;
+        progressText.innerText = `100%`;
+
         UI.showToast(`${result.count} kelime başarıyla ayıklandı ve eklendi!`, "success");
-        UI.hideImportModal();
-        window.changeLanguage(); // Yenile
+        setTimeout(() => {
+            UI.hideImportModal();
+            progressContainer.classList.add('hidden');
+            progressBar.style.width = `0%`;
+            window.changeLanguage();
+        }, 1000);
     } catch (err) {
+        clearInterval(interval);
+        progressContainer.classList.add('hidden');
         UI.showToast("Madencilik başarısız: " + err.message, "error");
     }
+};
+
+window.handleBulkParse = async () => {
+    const text = document.getElementById('bulkPasteArea').value;
+    if (!text.trim()) return UI.showToast("Metin girilmedi", "error");
+
+    // Regex: Kelime ve çeviri çiftlerini algıla (-, :, , destekler)
+    const regex = /(.+?)(?:\s*[-:,]\s*)(.+?)(?:\n|$)/g;
+    const items = [];
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+        items.push({
+            source: match[1].trim(),
+            target: match[2].trim(),
+            hint: 'Toplu Giriş'
+        });
+    }
+
+    if (items.length === 0) return UI.showToast("Uyumlu format bulunamadı", "warning");
+
+    UI.showToast(`${items.length} kelime işleniyor...`, "info");
+    let count = 0;
+    for (const item of items) {
+        try {
+            await API.saveWord(item.source, item.target, item.hint, AppState.source_lang, AppState.target_lang);
+            count++;
+        } catch (e) { }
+    }
+
+    UI.showToast(`${count} kelime başarıyla eklendi!`, "success");
+    document.getElementById('bulkPasteArea').value = "";
+    window.changeLanguage();
 };
 
 /**

@@ -58,7 +58,8 @@ async function initDB() {
                 context_hint TEXT,
                 source_lang TEXT DEFAULT 'en',
                 target_lang TEXT DEFAULT 'tr',
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(source_word, source_lang, target_lang)
             )
         `);
 
