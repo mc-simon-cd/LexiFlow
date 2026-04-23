@@ -1,6 +1,10 @@
 # 📘 LexiFlow
 
-**LexiFlow**, bağlamsal zeka, NLP (Doğal Dil İşleme) ve modern UI/UX prensipleriyle donatılmış, Simon Project bünyesinde geliştirilen yeni nesil bir akıllı sözlük ve çeviri algoritması projesidir.
+<p align="center">
+  <img src="client/assets/logo.png" width="120" alt="LexiFlow Logo">
+</p>
+
+**LexiFlow**, bağlamsal zeka...
 
 ---
 
