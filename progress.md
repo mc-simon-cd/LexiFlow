@@ -31,5 +31,15 @@
 - [x] **Manual Upload Center**: Yerel JSON/CSV dosyalarını sisteme aktarma.
 - [x] **Hata Teşhis Katmanı**: Backend ve Frontend için detaylı doğrulama sistemi.
 
+## 🌌 Aşama 7: İleri Seviye Bağlamsal Zeka (Planlanıyor - Gelecek Vizyonu)
+
+[ ] Semantik İlişki Haritalama: Kelimeler arasındaki anlamsal bağları (synonyms/antonyms) grafik tabanlı veritabanı mantığıyla yönetme.
+
+[ ] Kullanıcı Alışkanlığı Analizi: Kullanıcının geçmiş çeviri tercihlerinden öğrenen kişiselleştirilmiş ML modeli.
+
+[ ] Duygu Analizi (Sentiment Analysis): Cümlenin tonuna (resmi, samimi, üzgün) göre en uygun karşılığın otomatik seçilmesi.
+
+[ ] Sinirsel Çeviri Yedeklemesi: Sözlükte bulunmayan karmaşık yapılar için hafifletilmiş bir Transformer modeli (LLM) entegrasyonu.
+
 ---
 *LexiFlow v3.2.2 - Projenin tüm ana hedeflerine başarıyla ulaşıldı.*
